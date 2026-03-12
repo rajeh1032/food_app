@@ -1,0 +1,74 @@
+{
+  "app": {
+    "name": "Recipe App",
+    "welcome": "Welcome"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "retry": "Retry",
+    "no_data": "No data available",
+    "something_went_wrong": "Something went wrong"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "forgot_password": "Forgot Password?",
+    "dont_have_account": "Don't have an account?",
+    "already_have_account": "Already have an account?",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up"
+  },
+  "home": {
+    "title": "Home",
+    "popular_recipes": "Popular Recipes",
+    "categories": "Categories",
+    "see_all": "See All"
+  },
+  "search": {
+    "title": "Search",
+    "search_recipes": "Search recipes...",
+    "no_results": "No results found",
+    "recent_searches": "Recent Searches"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "no_favorites": "No favorites yet",
+    "add_to_favorites": "Add to Favorites",
+    "remove_from_favorites": "Remove from Favorites"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit_profile": "Edit Profile",
+    "settings": "Settings",
+    "my_recipes": "My Recipes",
+    "saved_recipes": "Saved Recipes"
+  },
+  "recipe": {
+    "ingredients": "Ingredients",
+    "instructions": "Instructions",
+    "cooking_time": "Cooking Time",
+    "servings": "Servings",
+    "difficulty": "Difficulty",
+    "calories": "Calories",
+    "rating": "Rating"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalid_email": "Invalid email address",
+    "password_too_short": "Password must be at least 8 characters",
+    "passwords_dont_match": "Passwords don't match"
+  }
+}

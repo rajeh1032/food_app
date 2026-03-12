@@ -1,0 +1,68 @@
+name: food_app
+description: "A Recipe App built with Flutter following Feature-First Clean Architecture"
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^8.1.6
+  hydrated_bloc: ^9.1.5
+
+  # Dependency Injection
+  get_it: ^8.0.2
+  injectable: ^2.5.0
+
+  # Networking
+  dio: ^5.7.0
+  pretty_dio_logger: ^1.4.0
+  connectivity_plus: ^6.1.1
+
+  # Functional Programming
+  either_dart: ^1.0.0
+
+  # UI & Responsive Design
+  flutter_screenutil: ^5.9.3
+  google_fonts: ^6.2.1
+
+  # Localization
+  easy_localization: ^3.0.7
+
+  # Storage
+  shared_preferences: ^2.3.3
+  path_provider: ^2.1.5
+
+  # Icons
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code Generation
+  build_runner: ^2.4.13
+  injectable_generator: ^2.6.2
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/svg/
+    - assets/translations/
+
+  # Fonts will be configured after design system extraction
+  # fonts:
+  #   - family: CustomFont
+  #     fonts:
+  #       - asset: fonts/CustomFont-Regular.ttf
+  #       - asset: fonts/CustomFont-Bold.ttf
+  #         weight: 700
