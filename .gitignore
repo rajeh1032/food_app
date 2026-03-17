@@ -64,3 +64,4 @@ lib/generated/
 .env.*.local
 .txt
 .gitkeep
+pubspec.lock
