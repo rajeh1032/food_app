@@ -9,21 +9,21 @@ abstract class AppStyles {
 
   // Display Styles
   static TextStyle displayLarge = GoogleFonts.poppins(
-    fontSize: 32.sp,
+    fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
     height: 1.2,
   );
 
   static TextStyle displayMedium = GoogleFonts.poppins(
-    fontSize: 28.sp,
+    fontSize: 28,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
     height: 1.2,
   );
 
   static TextStyle displaySmall = GoogleFonts.poppins(
-    fontSize: 24.sp,
+    fontSize: 24,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
@@ -31,21 +31,21 @@ abstract class AppStyles {
 
   // Headline Styles
   static TextStyle headlineLarge = GoogleFonts.poppins(
-    fontSize: 22.sp,
+    fontSize: 22,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
   );
 
   static TextStyle headlineMedium = GoogleFonts.poppins(
-    fontSize: 20.sp,
+    fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
   );
 
   static TextStyle headlineSmall = GoogleFonts.poppins(
-    fontSize: 18.sp,
+    fontSize: 18,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.4,
@@ -53,21 +53,21 @@ abstract class AppStyles {
 
   // Title Styles
   static TextStyle titleLarge = GoogleFonts.poppins(
-    fontSize: 16.sp,
+    fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.4,
   );
 
   static TextStyle titleMedium = GoogleFonts.poppins(
-    fontSize: 14.sp,
+    fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     height: 1.4,
   );
 
   static TextStyle titleSmall = GoogleFonts.poppins(
-    fontSize: 12.sp,
+    fontSize: 12,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     height: 1.4,
@@ -75,21 +75,21 @@ abstract class AppStyles {
 
   // Body Styles
   static TextStyle bodyLarge = GoogleFonts.poppins(
-    fontSize: 16.sp,
+    fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
     height: 1.5,
   );
 
   static TextStyle bodyMedium = GoogleFonts.poppins(
-    fontSize: 14.sp,
+    fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
     height: 1.5,
   );
 
   static TextStyle bodySmall = GoogleFonts.poppins(
-    fontSize: 12.sp,
+    fontSize: 12,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
     height: 1.5,
@@ -97,21 +97,21 @@ abstract class AppStyles {
 
   // Label Styles
   static TextStyle labelLarge = GoogleFonts.poppins(
-    fontSize: 14.sp,
+    fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     height: 1.4,
   );
 
   static TextStyle labelMedium = GoogleFonts.poppins(
-    fontSize: 12.sp,
+    fontSize: 12,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
     height: 1.4,
   );
 
   static TextStyle labelSmall = GoogleFonts.poppins(
-    fontSize: 10.sp,
+    fontSize: 10,
     fontWeight: FontWeight.w500,
     color: AppColors.textHint,
     height: 1.4,
@@ -119,21 +119,21 @@ abstract class AppStyles {
 
   // Button Styles
   static TextStyle buttonLarge = GoogleFonts.poppins(
-    fontSize: 16.sp,
+    fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.white,
     height: 1.2,
   );
 
   static TextStyle buttonMedium = GoogleFonts.poppins(
-    fontSize: 14.sp,
+    fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.white,
     height: 1.2,
   );
 
   static TextStyle buttonSmall = GoogleFonts.poppins(
-    fontSize: 12.sp,
+    fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.white,
     height: 1.2,
