@@ -58,6 +58,7 @@ flutter:
   assets:
     - assets/images/
     - assets/svg/
+    - assets/png/
     - assets/translations/
 
   # Fonts will be configured after design system extraction

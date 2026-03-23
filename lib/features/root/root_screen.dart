@@ -21,11 +21,11 @@ class RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
 
   // List of screens for each tab
-  final List<Widget> _screens = const [
-    HomeScreen(),
+  final List<Widget> _screens = [
+    const HomeScreen(),
     SearchScreen(),
-    FavoritesScreen(),
-    ProfileScreen(),
+    const FavoritesScreen(),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
