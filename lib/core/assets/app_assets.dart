@@ -3,7 +3,6 @@ abstract class AppAssets {
   // Base paths
   static const String _imgPath = 'assets/images/';
   static const String _svgPath = 'assets/svg/';
-  static const String _iconsPath = 'assets/icons/';
 
   // ==================== IMAGES ====================
   // Add your image assets here
@@ -11,8 +10,17 @@ abstract class AppAssets {
   // static const String logo = '${_imgPath}logo.png';
   // static const String placeholder = '${_imgPath}placeholder.png';
   // static const String onboarding1 = '${_imgPath}onboarding_1.png';
+  static const String userImage = '${_imgPath}user_image.png';
 
   // ==================== SVG ICONS ====================
+
+  // Logo Icon
+  static const String logo = '${_svgPath}logo.svg';
+
+  // Onboarding Images
+  static const String onboarding1 = '${_imgPath}onboarding_1.png';
+  // static const String onboarding2 = '${_imgPath}onboarding_2.png';
+  // static const String onboarding3 = '${_imgPath}onboarding_3.png';
 
   // Navigation Icons
   /// Home/main screen icon
