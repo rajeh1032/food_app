@@ -3,15 +3,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'core/di/di.dart';
 import 'core/routes/routes.dart';
 import 'core/routes/route_names.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/my_bloc_observer.dart';
 import 'core/utils/shared_pref_services.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize EasyLocalization
   await EasyLocalization.ensureInitialized();
@@ -47,6 +52,16 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // Check if user is logged in
+  String _getInitialRoute() {
+    final userId = SharedPrefService.instance.getUserId();
+    // If user ID exists, user is logged in -> go to root
+    // Otherwise, go to login
+    return (userId != null && userId.isNotEmpty)
+        ? RouteNames.root
+        : RouteNames.login;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -69,7 +84,7 @@ class MyApp extends StatelessWidget {
           // Routing
           routes: Routes.myAppRoutes,
           onGenerateRoute: Routes.onGenerateRoute,
-          initialRoute: RouteNames.root,
+          initialRoute: _getInitialRoute(),
         );
       },
     );
