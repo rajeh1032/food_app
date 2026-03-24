@@ -70,8 +70,10 @@ class MyApp extends StatelessWidget {
           routes: Routes.myAppRoutes,
           onGenerateRoute: Routes.onGenerateRoute,
           initialRoute: RouteNames.root,
+
         );
       },
     );
   }
 }
+
