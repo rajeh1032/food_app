@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/routes/route_names.dart';
+import '../../core/utils/shared_pref_services.dart';
 import 'package:flutter/services.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -53,7 +54,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _navigateToHome() {
-    Navigator.pushReplacementNamed(context, RouteNames.root);
+    // Mark onboarding as seen
+    SharedPrefService.instance.setOnBoardingSeen();
+    // Navigate to login
+    Navigator.pushReplacementNamed(context, RouteNames.login);
   }
 
   @override

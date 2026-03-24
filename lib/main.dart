@@ -1,6 +1,4 @@
-
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -54,16 +52,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // Check if user is logged in
-  String _getInitialRoute() {
-    final userId = SharedPrefService.instance.getUserId();
-    // If user ID exists, user is logged in -> go to root
-    // Otherwise, go to login
-    return (userId != null && userId.isNotEmpty)
-        ? RouteNames.root
-        : RouteNames.login;
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -86,7 +74,7 @@ class MyApp extends StatelessWidget {
           // Routing
           routes: Routes.myAppRoutes,
           onGenerateRoute: Routes.onGenerateRoute,
-          initialRoute: _getInitialRoute(),
+          initialRoute: RouteNames.splash, // Always start with splash
         );
       },
     );
