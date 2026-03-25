@@ -1,15 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_styles.dart';
 import '../../core/utils/svg_icon.dart';
-import '../favorites/ui/screens/favorites_screen.dart';
 import '../home/ui/screens/home_screen.dart';
 import '../profile/ui/screens/profile_screen.dart';
+import '../saved/Data/Data Sources/saved_local_data_source.dart';
+import '../saved/ui/screens/saved_screen.dart';
 import '../search/ui/screens/search_screen.dart';
 
-/// Root screen with bottom navigation
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
 
@@ -20,24 +21,32 @@ class RootScreen extends StatefulWidget {
 class RootScreenState extends State<RootScreen> {
   int _selectedIndex = 0;
 
-  // List of screens for each tab
   final List<Widget> _screens = [
     const HomeScreen(),
     SearchScreen(),
-    const FavoritesScreen(),
+    const SavedScreen(), // ← no userId needed, gets from FirebaseAuth internally
     const ProfileScreen(),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    // Open Hive box for current user as soon as RootScreen loads
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+    SavedLocalDataSourceImpl.openBoxForUser(userId);
+  }
+
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -55,26 +64,10 @@ class RootScreenState extends State<RootScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(
-                  icon: AppAssets.homeIcon,
-                  label: 'Home',
-                  index: 0,
-                ),
-                _buildNavItem(
-                  icon: AppAssets.searchIcon,
-                  label: 'Search',
-                  index: 1,
-                ),
-                _buildNavItem(
-                  icon: AppAssets.favoriteIcon,
-                  label: 'Favorites',
-                  index: 2,
-                ),
-                _buildNavItem(
-                  icon: AppAssets.profileIcon,
-                  label: 'Profile',
-                  index: 3,
-                ),
+                _buildNavItem(icon: AppAssets.homeIcon,    label: 'Home',    index: 0),
+                _buildNavItem(icon: AppAssets.searchIcon,  label: 'Search',  index: 1),
+                _buildNavItem(icon: AppAssets.bookmarkIcon,   label: 'Saved',   index: 2),
+                _buildNavItem(icon: AppAssets.profileIcon, label: 'Profile', index: 3),
               ],
             ),
           ),
@@ -89,18 +82,11 @@ class RootScreenState extends State<RootScreen> {
     required int index,
   }) {
     final isSelected = _selectedIndex == index;
-
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        // decoration: BoxDecoration(
-        //   color: isSelected
-        //       ? AppColors.primaryColor.withOpacity(0.1)
-        //       : Colors.transparent,
-        //   borderRadius: BorderRadius.circular(12.r),
-        // ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

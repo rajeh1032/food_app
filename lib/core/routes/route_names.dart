@@ -3,6 +3,7 @@ abstract class RouteNames {
   // Root/Main
   static const String root = '/';
   static const String splash = '/splash';
+  static const String onboarding = '/onboarding';
 
   // Authentication
   static const String login = '/login';
