@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:injectable/injectable.dart';
 import '../Models/saved_meal_model.dart';
 
 abstract class SavedLocalDataSource {
@@ -8,6 +9,7 @@ abstract class SavedLocalDataSource {
   Future<bool> isMealSaved({required String mealId, required String userId});
 }
 
+@Injectable(as: SavedLocalDataSource)
 class SavedLocalDataSourceImpl implements SavedLocalDataSource {
   // Each user gets their own box: "saved_<userId>"
   Box<SavedMealModel> _getBox(String userId) {

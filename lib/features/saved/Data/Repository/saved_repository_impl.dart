@@ -1,10 +1,10 @@
 import 'package:either_dart/either.dart';
+import 'package:food_app/core/model/failures.dart';
+import 'package:food_app/features/saved/Data/Models/saved_meal_model.dart';
+import 'package:food_app/features/saved/Domain/entity/saved_meal_entity.dart';
+import 'package:food_app/features/saved/Domain/repository/saved_repository.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/model/failures.dart';
-import '../../Domain/entity/saved_meal_entity.dart';
-import '../../domain/repository/saved_repository.dart';
 import '../Data Sources/saved_local_data_source.dart';
-import '../Models/saved_meal_model.dart';
 
 @LazySingleton(as: SavedRepository)
 class SavedRepositoryImpl implements SavedRepository {
@@ -23,6 +23,7 @@ class SavedRepositoryImpl implements SavedRepository {
       return Left(ServerError(errorMessage: e.toString()));
     }
   }
+
   @override
   Future<Either<Failures, void>> saveMeal(SavedMealEntity meal) async {
     try {
@@ -53,8 +54,7 @@ class SavedRepositoryImpl implements SavedRepository {
     required String userId,
   }) async {
     try {
-      return await _localDataSource.isMealSaved(
-          mealId: mealId, userId: userId);
+      return await _localDataSource.isMealSaved(mealId: mealId, userId: userId);
     } catch (_) {
       return false;
     }
