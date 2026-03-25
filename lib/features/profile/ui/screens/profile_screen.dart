@@ -5,7 +5,7 @@ import '../../../../core/di/di.dart';
 import '../../../../core/routes/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_styles.dart';
-import '../../../../core/utils/dialog_utils.dart';
+import '../../Domain/Entity/profile_user_entity.dart';
 import '../cubit/profile_states.dart';
 import '../cubit/profile_view_model.dart';
 import '../widgets/profile_actions.dart';
@@ -20,10 +20,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  ProfileViewModel viewModel = getIt<ProfileViewModel>();
+  final ProfileViewModel viewModel = getIt<ProfileViewModel>();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  ProfileUserEntity? _cachedUser;
 
   @override
   void initState() {
@@ -52,11 +53,11 @@ class ProfileScreenState extends State<ProfileScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(18.r),
         ),
         title: Row(
           children: [
-            Icon(Icons.logout, color: AppColors.errorColor),
+            Icon(Icons.logout_rounded, color: AppColors.errorColor),
             SizedBox(width: 12.w),
             Text('Logout', style: AppStyles.headlineSmall),
           ],
@@ -93,17 +94,243 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _syncControllers(ProfileUserEntity user) {
+    final nextName = user.name ?? '';
+    final nextEmail = user.email ?? '';
+
+    if (_nameController.text != nextName) {
+      _nameController.text = nextName;
+    }
+    if (_emailController.text != nextEmail) {
+      _emailController.text = nextEmail;
+    }
+  }
+
+  String _formatMemberSince(String? rawDate) {
+    if (rawDate == null || rawDate.trim().isEmpty) {
+      return 'Fresh member';
+    }
+
+    final parsedDate = DateTime.tryParse(rawDate);
+    if (parsedDate == null) {
+      return 'Fresh member';
+    }
+
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return '${months[parsedDate.month - 1]} ${parsedDate.year}';
+  }
+
+  String _buildUserTag(String? uid) {
+    if (uid == null || uid.trim().isEmpty) {
+      return 'Guest';
+    }
+
+    final normalizedUid = uid.trim();
+    final suffix = normalizedUid.length <= 6
+        ? normalizedUid
+        : normalizedUid.substring(normalizedUid.length - 6);
+
+    return '#${suffix.toUpperCase()}';
+  }
+
+  Widget _buildHeroSection(ProfileUserEntity user) {
+    final topInset = MediaQuery.paddingOf(context).top;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(24.w, topInset + 20.h, 24.w, 68.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFC469),
+            AppColors.primaryColor,
+            AppColors.primaryDark,
+          ],
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(36.r)),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 8.h,
+            right: -18.w,
+            child: Container(
+              width: 120.w,
+              height: 120.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white.withValues(alpha: 0.1),
+              ),
+            ),
+          ),
+          Positioned(
+            left: -32.w,
+            bottom: 28.h,
+            child: Container(
+              width: 96.w,
+              height: 96.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.white.withValues(alpha: 0.08),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'My Profile',
+                style: AppStyles.displaySmall.copyWith(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 250.w),
+                child: Text(
+                  'Manage your details, keep your identity polished, and stay ready for the next recipe.',
+                  style: AppStyles.bodyMedium.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.84),
+                  ),
+                ),
+              ),
+              SizedBox(height: 30.h),
+              Center(
+                child: ProfileHeader(
+                  name: user.name,
+                  email: user.email,
+                  memberSince: _formatMemberSince(user.createdAt),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: CircularProgressIndicator(color: AppColors.primaryColor),
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(24.w),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(28.w),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(24.r),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withValues(alpha: 0.05),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72.w,
+                height: 72.w,
+                decoration: BoxDecoration(
+                  color: AppColors.errorColor.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  size: 36.sp,
+                  color: AppColors.errorColor,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Text(
+                'Unable to load profile',
+                style: AppStyles.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10.h),
+              Text(
+                message,
+                style: AppStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24.h),
+              ElevatedButton.icon(
+                onPressed: viewModel.getProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  foregroundColor: AppColors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 28.w,
+                    vertical: 15.h,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                ),
+                icon: const Icon(Icons.refresh_rounded),
+                label: Text('Try Again', style: AppStyles.buttonMedium),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ProfileViewModel, ProfileStates>(
       bloc: viewModel,
       listener: (context, state) {
-        if (state is ProfileUpdatedState) {
-          DialogUtils.showSuccess(
-            context: context,
-            message: 'Profile updated successfully',
-            title: 'Success',
-          );
+        if (state is ProfileLoadedState) {
+          _cachedUser = state.user;
+        } else if (state is ProfileUpdatedState) {
+          _cachedUser = state.user;
+          _syncControllers(state.user);
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                backgroundColor: AppColors.primaryColor,
+                content: Text('Profile updated successfully'),
+              ),
+            );
+        } else if (state is ProfileErrorState && _cachedUser != null) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                backgroundColor: AppColors.errorColor,
+                content: Text(state.message),
+              ),
+            );
         } else if (state is ProfileLogoutSuccessState) {
           Navigator.pushNamedAndRemoveUntil(
             context,
@@ -113,151 +340,66 @@ class ProfileScreenState extends State<ProfileScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.scaffoldBgColor,
+        backgroundColor: const Color(0xFFFFFAF4),
         body: BlocBuilder<ProfileViewModel, ProfileStates>(
           bloc: viewModel,
           builder: (context, state) {
-            if (state is ProfileLoadingState) {
-              return Center(
-                child: CircularProgressIndicator(color: AppColors.primaryColor),
-              );
+            final user = switch (state) {
+              ProfileLoadedState(:final user) => user,
+              ProfileUpdatedState(:final user) => user,
+              _ => _cachedUser,
+            };
+
+            if (user != null) {
+              _cachedUser = user;
+              _syncControllers(user);
             }
 
-            if (state is ProfileErrorState) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 80,
-                        color: AppColors.errorColor,
-                      ),
-                      SizedBox(height: 24.h),
-                      Text(
-                        'Error loading profile',
-                        style: AppStyles.headlineMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        state.message,
-                        style: AppStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 32.h),
-                      ElevatedButton.icon(
-                        onPressed: () => viewModel.getProfile(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          foregroundColor: AppColors.white,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 32.w,
-                            vertical: 16.h,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                        ),
-                        icon: const Icon(Icons.refresh),
-                        label: Text('Retry', style: AppStyles.buttonMedium),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+            if (state is ProfileLoadingState && user == null) {
+              return _buildLoadingState();
             }
 
-            // Populate fields when data is loaded
-            if (state is ProfileLoadedState || state is ProfileUpdatedState) {
-              final user = state is ProfileLoadedState
-                  ? state.user
-                  : (state as ProfileUpdatedState).user;
-
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (_nameController.text != user.name) {
-                  _nameController.text = user.name ?? '';
-                }
-                if (_emailController.text != user.email) {
-                  _emailController.text = user.email ?? '';
-                }
-              });
+            if (state is ProfileErrorState && user == null) {
+              return _buildErrorState(state.message);
             }
 
-            return CustomScrollView(
-              slivers: [
-                // App Bar with gradient
-                SliverAppBar(
-                  expandedHeight: 200.h,
-                  floating: false,
-                  pinned: true,
-                  backgroundColor: AppColors.primaryColor,
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    title: Text(
-                      'My Profile',
-                      style: AppStyles.headlineSmall.copyWith(
-                        color: AppColors.white,
-                      ),
-                    ),
-                    background: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.warningColor,
-                            AppColors.primaryDark,
+            if (user == null) {
+              return _buildLoadingState();
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildHeroSection(user),
+                  Transform.translate(
+                    offset: Offset(0, -34.h),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ProfileInfoCard(
+                              emailController: _emailController,
+                              nameController: _nameController,
+                              memberSince: _formatMemberSince(user.createdAt),
+                              userTag: _buildUserTag(user.uid),
+                            ),
+                            SizedBox(height: 20.h),
+                            ProfileActions(
+                              viewModel: viewModel,
+                              onUpdatePressed: _handleUpdateProfile,
+                              onLogoutPressed: _handleLogout,
+                            ),
+                            SizedBox(height: 8.h),
                           ],
                         ),
                       ),
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 40.h),
-                          child: const ProfileHeader(),
-                        ),
-                      ),
                     ),
                   ),
-                ),
-
-                // Content
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.w),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SizedBox(height: 8.h),
-
-                          // Profile Info Card
-                          ProfileInfoCard(
-                            emailController: _emailController,
-                            nameController: _nameController,
-                          ),
-
-                          SizedBox(height: 32.h),
-
-                          // Actions
-                          ProfileActions(
-                            viewModel: viewModel,
-                            onUpdatePressed: _handleUpdateProfile,
-                            onLogoutPressed: _handleLogout,
-                          ),
-
-                          SizedBox(height: 24.h),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         ),

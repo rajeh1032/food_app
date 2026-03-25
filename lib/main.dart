@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive/hive.dart';
+import 'package:food_app/firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,7 +15,7 @@ import 'core/theme/app_theme.dart';
 import 'core/utils/my_bloc_observer.dart';
 import 'core/utils/shared_pref_services.dart';
 import 'features/saved/Data/Models/saved_meal_model.dart';
-import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -26,18 +28,14 @@ void main() async {
   // Initialize SharedPreferences
   await SharedPrefService.instance.init();
 
-  // ── Initialize Hive ────────────────────────────────────────────────────────
   await Hive.initFlutter();
-  Hive.registerAdapter(SavedMealModelAdapter()); // ← register adapter
-  // NOTE: Don't open the box here — it's opened per-user in RootScreen.initState()
-  // ──────────────────────────────────────────────────────────────────────────
+  Hive.registerAdapter(SavedMealModelAdapter());
 
-  // Initialize HydratedBloc storage
+
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
 
-  // Set BLoC observer for debugging
   Bloc.observer = MyBlocObserver();
 
   // Configure dependency injection
@@ -50,7 +48,10 @@ void main() async {
       ],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
-      child: const MyApp(),
+      child: DevicePreview(
+        enabled: kDebugMode,
+        builder: (context) => const MyApp(),
+      ),
     ),
   );
 }
@@ -71,10 +72,14 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
+          builder: DevicePreview.appBuilder,
           theme: AppTheme.lightTheme,
           routes: Routes.myAppRoutes,
           onGenerateRoute: Routes.onGenerateRoute,
           initialRoute: RouteNames.splash,
+
+    
+
         );
       },
     );

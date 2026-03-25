@@ -30,6 +30,7 @@ dependencies:
 
   # UI & Responsive Design
   flutter_screenutil: ^5.9.3
+  device_preview: ^1.2.0
   google_fonts: ^6.2.1
 
   # Localization
