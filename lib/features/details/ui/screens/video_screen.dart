@@ -22,12 +22,11 @@ class _VideoScreenState extends State<VideoScreen> {
   void initState() {
     super.initState();
 
-    /// نجيب video id من الرابط
     final videoId =
     YoutubePlayer.convertUrlToId(widget.youtubeUrl);
 
     controller = YoutubePlayerController(
-      initialVideoId: videoId!,
+      initialVideoId: videoId ??"",
       flags: const YoutubePlayerFlags(
         autoPlay: false,
         mute: false,
@@ -49,9 +48,14 @@ class _VideoScreenState extends State<VideoScreen> {
         title: const Text("Watch Video"),
       ),
 
-      body: YoutubePlayer(
-        controller: controller,
-        showVideoProgressIndicator: true,
+      body: Column(
+        children: [
+          YoutubePlayer(
+            controller: controller,
+            showVideoProgressIndicator: true,
+          ),
+
+        ],
       ),
     );
   }

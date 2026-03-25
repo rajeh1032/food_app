@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/theme/app_colors.dart';
 
 class CircleIconButton extends StatelessWidget {
   final IconData icon;
@@ -6,6 +9,7 @@ class CircleIconButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const CircleIconButton({
+    super.key,
     required this.icon,
     this.iconColor,
     required this.onTap,
@@ -16,20 +20,24 @@ class CircleIconButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 38,
-        height: 38,
+        width: 38.w,
+        height: 38.h,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: AppColors.black.withOpacity(0.12),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
             ),
           ],
         ),
-        child: Icon(icon, size: 18, color: iconColor ?? const Color(0xFF1A1A1A)),
+        child: Icon(
+          icon,
+          size: 18.sp,
+          color: iconColor ?? AppColors.textPrimary,
+        ),
       ),
     );
   }

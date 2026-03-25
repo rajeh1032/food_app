@@ -283,11 +283,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             final meal = successState.meals[index];
                             return HomeMealCard(
+
                               imageUrl: meal.strMealThumb ?? '',
                               title: meal.strMeal ?? '',
                               timeLabel: _getRandomTimeLabel(
                                 meal.idMeal ?? meal.strMeal ?? '',
-                              ),
+                              ), idMeal: meal.idMeal ??'',
                             );
                           },
                         ),

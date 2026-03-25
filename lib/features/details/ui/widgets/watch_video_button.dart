@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_styles.dart';
 import '../screens/video_screen.dart';
 
 class WatchVideoButton extends StatelessWidget {
-   final String youtubeUrl;
-  WatchVideoButton({required this.youtubeUrl});
+
+  final String youtubeUrl;
+
+  const WatchVideoButton({
+    super.key,
+    required this.youtubeUrl,
+  });
+
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: () {
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -17,32 +28,50 @@ class WatchVideoButton extends StatelessWidget {
             ),
           ),
         );
+
       },
+
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+        padding: EdgeInsets.symmetric(
+          horizontal: 28.w,
+          vertical: 14.h,
+        ),
+
         decoration: BoxDecoration(
-          color: const Color(0xFFFF8C00),
-          borderRadius: BorderRadius.circular(32),
+          color: AppColors.primaryColor,
+
+          borderRadius:
+          BorderRadius.circular(32.r),
+
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFF8C00).withOpacity(0.4),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
+              color: AppColors.primaryColor
+                  .withOpacity(0.4),
+
+              blurRadius: 16.r,
+
+              offset: Offset(0, 6.h),
             ),
           ],
         ),
-        child: const Row(
+
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 22),
-            SizedBox(width: 8),
+
+            Icon(
+              Icons.play_circle_fill_rounded,
+              color: AppColors.white,
+              size: 22.sp,
+            ),
+
+            SizedBox(width: 8.w),
+
             Text(
               'Watch Video',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
+              style:
+              AppStyles.buttonMedium.copyWith(
+                fontSize: 15.sp,
               ),
             ),
           ],
