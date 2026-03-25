@@ -1,287 +1,161 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:food_app/features/search/ui/Widgets/last_viewed.dart';
-import 'package:food_app/features/search/ui/Widgets/search_history.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_styles.dart';
-import 'package:http/http.dart' as http;
+import '../cubit/search_cubit.dart';
+import '../cubit/search_states.dart';
 
-class SearchScreen extends StatefulWidget {
-  final List lastViewed = [];
-  final List searchHistory = [];
+import '../widgets/search_field.dart';
+import '../widgets/search_history.dart';
+import '../widgets/last_viewed.dart';
+import '../widgets/meals_grid.dart';
+import '../widgets/section_header.dart';
 
-  SearchScreen({super.key});
-
-  @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
-  List meals = [];
-  bool isLoading = false;
-  String currentQuery = "";
-  Timer? _debounce;
-
-  bool showAllHistory = false;
-  bool showAllViewed = false;
-
-  final Random _random = Random();
-
-  String randomRate() {
-    double rate = (1 + _random.nextDouble() * 4);
-    return "(${rate.toStringAsFixed(1)})";
-  }
-
-  void onSearchChanged(String query) {
-    currentQuery = query;
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      searchMeals(query);
-    });
-    setState(() {});
-  }
-
-  Future<void> searchMeals(String query) async {
-    if (query.isEmpty) {
-      setState(() { meals = []; });
-      return;
-    }
-    setState(() { isLoading = true; });
-
-    try {
-      final response = await http.get(
-        Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?s=$query'),
-      );
-
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          meals = data['meals'] ?? [];
-          isLoading = false;
-        });
-      } else {
-        setState(() { isLoading = false; });
-      }
-    } catch (e) {
-      setState(() { isLoading = false; });
-    }
-  }
-
-  Widget buildSectionHeader(String title, bool showAll, VoidCallback toggleShowAll) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title, style: AppStyles.titleLarge.copyWith(color: AppColors.black, fontSize: 18)),
-        TextButton(
-          onPressed: toggleShowAll,
-          child: Text(
-            showAll ? "Show Less" : "See All",
-            style: TextStyle(color: AppColors.difficultyMedium, fontWeight: FontWeight.bold),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget buildHorizontalList(List data, bool showAll) {
-    if (data.isEmpty) return const SizedBox.shrink();
-    int itemCount = showAll ? data.length : (data.length > 3 ? 3 : data.length);
-
-    return SizedBox(
-      height: 180,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          final meal = data[index];
-          return LastViewed(
-            image: meal['strMealThumb'] ?? '',
-            title: meal['strMeal'] ?? '',
-            rate: meal['rate'] ?? "(3.5)",
-          );
-        },
-      ),
-    );
-  }
-
-  Widget buildVerticalList(List data, bool showAll) {
-    if (data.isEmpty) return const SizedBox.shrink();
-    int itemCount = showAll ? data.length : (data.length > 3 ? 3 : data.length);
-
-    return ListView.builder(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        final meal = data[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SearchHistory(
-            title: meal['strMeal'] ?? '',
-            image: meal['strMealThumb'] ?? '',
-            rate: meal['rate'] ?? "(3.5)",
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    super.dispose();
-  }
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SearchCubit(),
+      child: const SearchView(),
+    );
+  }
+}
+
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
+
+  @override
+  State<SearchView> createState() => _SearchViewState();
+}
+
+class _SearchViewState extends State<SearchView> {
+  bool showAllHistory = false;
+  bool showAllViewed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.watch<SearchCubit>();
+
     return Scaffold(
-      backgroundColor: AppColors.cardBgColor,
+      backgroundColor: const Color(0xffF5F5F5),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 60.h),
 
-              Container(
-                padding: const EdgeInsets.only(top: 60),
-                child: TextFormField(
-                  onChanged: onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: "Type ingredients...",
-                    hintStyle: AppStyles.labelMedium.copyWith(fontSize: 15),
-                    prefixIcon: Icon(Icons.search, color: AppColors.gray500),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+              const SearchField(),
 
-              buildSectionHeader("Search History", showAllHistory, () {
-                setState(() { showAllHistory = !showAllHistory; });
-              }),
-              buildVerticalList(widget.searchHistory, showAllHistory),
+              SizedBox(height: 15.h),
 
-              const SizedBox(height: 10),
-
-              buildSectionHeader("Last Viewed", showAllViewed, () {
-                setState(() { showAllViewed = !showAllViewed; });
-              }),
-              buildHorizontalList(widget.lastViewed, showAllViewed),
-
-              const SizedBox(height: 25),
-
-              Text("Based on your search",
-                  style: AppStyles.titleLarge.copyWith(color: AppColors.black)),
-              const SizedBox(height: 15),
-
-              isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : meals.isEmpty
-                  ? const Center(child: Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text("No results found"),
-              ))
-                  : GridView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  mainAxisExtent: 210,
-                ),
-                itemCount: meals.length,
-                itemBuilder: (context, index) {
-                  final meal = meals[index];
-                  final mealWithRate = {
-                    ...Map<String, dynamic>.from(meal),
-                    'rate': randomRate(),
-                  };
-
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-
-                        widget.lastViewed.removeWhere((m) => m['idMeal'] == mealWithRate['idMeal']);
-                        widget.lastViewed.insert(0, mealWithRate);
-
-                        widget.searchHistory.removeWhere((m) => m['idMeal'] == mealWithRate['idMeal']);
-                        widget.searchHistory.insert(0, mealWithRate);
-
-                        if (widget.searchHistory.length > 10) widget.searchHistory.removeLast();
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                            child: Image.network(
-                              mealWithRate['strMealThumb'] ?? '',
-                              height: 125,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  mealWithRate['strMeal'] ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppStyles.titleMedium.copyWith(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.star, color: Colors.amber, size: 14),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      mealWithRate['rate'],
-                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+              // Search History Section
+              SectionHeader(
+                title: "Search History",
+                buttonText: showAllHistory ? "See Less" : "See All",
+                onTap: () {
+                  setState(() {
+                    showAllHistory = !showAllHistory;
+                  });
                 },
               ),
-              const SizedBox(height: 30),
+
+              cubit.searchHistory.isEmpty
+                  ? const Text("No search history")
+                  : ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: showAllHistory
+                          ? cubit.searchHistory.length
+                          : cubit.searchHistory.take(3).length,
+                      itemBuilder: (context, index) {
+                        final meal = cubit.searchHistory[index];
+
+                        return SearchHistory(
+                          title: meal.strMeal ?? "",
+                          image: meal.strMealThumb ?? "",
+                          rate: meal.rate,
+                          isVertical: false,
+                        );
+                      },
+                    ),
+
+              SizedBox(height: 10.h),
+
+              // Last Viewed Section
+              SectionHeader(
+                title: "Last Viewed",
+                buttonText: showAllViewed ? "See Less" : "See All",
+                onTap: () {
+                  setState(() {
+                    showAllViewed = !showAllViewed;
+                  });
+                },
+              ),
+
+              SizedBox(height: 5.h),
+
+              cubit.lastViewed.isEmpty
+                  ? const Text("No viewed meals yet")
+                  : SizedBox(
+                      height: 160.h,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: showAllViewed
+                            ? cubit.lastViewed.length
+                            : cubit.lastViewed.take(3).length,
+                        itemBuilder: (context, index) {
+                          final meal = cubit.lastViewed[index];
+
+                          return LastViewed(
+                            title: meal.strMeal ?? "",
+                            image: meal.strMealThumb ?? "",
+                            rate: meal.rate,
+                          );
+                        },
+                      ),
+                    ),
+
+              SizedBox(height: 15.h),
+
+              Text(
+                "Based on your search",
+                style: AppStyles.headlineMedium,
+              ),
+              SizedBox(height: 15.h,),
+
+              BlocBuilder<SearchCubit, SearchStates>(
+                builder: (context, state) {
+                  if (state is SearchLoadingState) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.sp),
+                        child: const CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  if (state is SearchErrorState) {
+                    return Center(child: Text(state.error));
+                  }
+
+                  if (state is SearchSuccessState) {
+                    if (state.meals.isEmpty) {
+                      return const Center(child: Text("No meals found"));
+                    }
+
+                    return MealsGrid(meals: state.meals,);
+                  }
+
+                  return const SizedBox();
+                },
+              ),
+
+              SizedBox(height: 30.h),
             ],
           ),
         ),
