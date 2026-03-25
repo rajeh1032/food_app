@@ -14,6 +14,14 @@ abstract class AppAssets {
 
   // ==================== SVG ICONS ====================
 
+  // Logo Icon
+  static const String logo = '${_svgPath}logo.svg';
+
+  // Onboarding Images
+  static const String onboarding1 = '${_imgPath}onboarding_1.png';
+  // static const String onboarding2 = '${_imgPath}onboarding_2.png';
+  // static const String onboarding3 = '${_imgPath}onboarding_3.png';
+
   // Navigation Icons
   /// Home/main screen icon
   static const String homeIcon = '${_svgPath}home.svg';
