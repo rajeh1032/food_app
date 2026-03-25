@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/assets/app_assets.dart';
 import '../../../../core/di/di.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_styles.dart';
@@ -174,11 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const HomeGreetingHeader(
-                      avatarAssetPath: AppAssets.userImage,
-                      greeting: 'Welcome, 👋🏻',
-                      userName: 'Tasya Aulianza',
-                    ),
+                    const HomeGreetingHeader(),
                     SizedBox(height: 24.h),
                     HomeSearchBar(
                       hintText: 'Type ingredients...',

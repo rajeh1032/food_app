@@ -55,6 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
         Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?s=$query'),
       );
 
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
