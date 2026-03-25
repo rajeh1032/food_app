@@ -14,7 +14,6 @@ import 'core/utils/my_bloc_observer.dart';
 import 'core/utils/shared_pref_services.dart';
 import 'features/saved/Data/Models/saved_meal_model.dart';
 import 'firebase_options.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

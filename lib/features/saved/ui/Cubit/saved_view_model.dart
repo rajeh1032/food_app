@@ -6,7 +6,7 @@ import '../../Domain/use_case/is_meal_saved_use_case.dart';
 import '../../Domain/use_case/remove_meal_use_case.dart';
 import '../../Domain/use_case/save_meal_use_case.dart';
 import 'saved_states.dart';
-@injectable
+@lazySingleton
 class SavedViewModel extends Cubit<SavedState> {
   final GetSavedMealsUseCase _getSavedMeals;
   final SaveMealUseCase _saveMeal;
