@@ -15,7 +15,11 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final mealsJson = data['meals'] as List;
+        final mealsJson = data['meals'] as List<dynamic>?;
+        if (mealsJson == null || mealsJson.isEmpty) {
+          return [];
+        }
+
         return mealsJson.map((mealJson) => Meal.fromJson(mealJson)).toList();
       } else {
         throw Exception('Failed to load meals');
@@ -31,7 +35,12 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final mealJson = data['meals'][0];
+        final mealsJson = data['meals'] as List<dynamic>?;
+        if (mealsJson == null || mealsJson.isEmpty) {
+          throw Exception('Meal details not found');
+        }
+
+        final mealJson = mealsJson.first;
         return Meal.fromJson(mealJson);
       } else {
         throw Exception('Failed to load meal details');

@@ -13,6 +13,7 @@ class HomeMealCard extends StatelessWidget {
   final String title;
   final String timeLabel;
   final bool isSaved;
+  final VoidCallback? onTap;
   final VoidCallback? onFavoritePressed;
 
   const HomeMealCard({
@@ -21,6 +22,7 @@ class HomeMealCard extends StatelessWidget {
     required this.title,
     required this.timeLabel,
     this.isSaved = false,
+    this.onTap,
     this.onFavoritePressed,
     required this.mealId,
   });
@@ -55,6 +57,7 @@ class HomeMealCard extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
+              onTap?.call();
               Navigator.push(
                 context,
                 MaterialPageRoute(

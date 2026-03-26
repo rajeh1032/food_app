@@ -10,6 +10,7 @@ class SearchHistory extends StatelessWidget {
   final String image;
   final String? rate;
   final bool isVertical;
+  final VoidCallback? onTap;
 
   const SearchHistory({
     super.key,
@@ -18,6 +19,7 @@ class SearchHistory extends StatelessWidget {
     required this.image,
     this.rate,
     this.isVertical = false,
+    this.onTap,
   });
 
   @override
@@ -29,9 +31,11 @@ class SearchHistory extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12.h),
       elevation: 1,
       clipBehavior: Clip.hardEdge,
-      child: Padding(
-        padding: EdgeInsets.all(8.0.sp),
-        child: isVertical
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.all(8.0.sp),
+          child: isVertical
             ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -120,6 +124,7 @@ class SearchHistory extends StatelessWidget {
               ),
             ),
           ],
+          ),
         ),
       ),
     );

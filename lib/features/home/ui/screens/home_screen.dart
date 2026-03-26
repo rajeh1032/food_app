@@ -103,16 +103,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<HomeIngredientEntity> _bottomIngredients(
-      List<HomeIngredientEntity> items,
-      ) {
+    List<HomeIngredientEntity> items,
+  ) {
     final splitIndex = (items.length / 2).ceil();
     return items.skip(splitIndex).toList();
   }
 
   Widget _buildIngredientRow(
-      List<HomeIngredientEntity> ingredients,
-      HomeSuccessState successState,
-      ) {
+    List<HomeIngredientEntity> ingredients,
+    HomeSuccessState successState,
+  ) {
     return Row(
       children: List.generate(ingredients.length, (index) {
         final ingredient = ingredients[index];
@@ -147,19 +147,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: viewModel),
-        BlocProvider.value(value: savedViewModel),
-        BlocProvider(
-          create: (context) => SearchCubit(uid: _userId),
-        ),
-      ],
-      child: Scaffold(
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: viewModel),
+          BlocProvider.value(value: savedViewModel),
+        ],
+        child: Scaffold(
         backgroundColor: AppColors.scaffoldBgColor,
         body: BlocListener<SavedViewModel, SavedState>(
           listenWhen: (_, current) =>
-          current is BookmarkToggledState || current is SavedErrorState,
+              current is BookmarkToggledState || current is SavedErrorState,
           listener: (context, state) {
             if (state is BookmarkToggledState) {
               ScaffoldMessenger.of(context)
@@ -219,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 final successState = state as HomeSuccessState;
                 final topIngredients =
-                _topIngredients(successState.ingredients);
+                    _topIngredients(successState.ingredients);
                 final bottomIngredients = _bottomIngredients(
                   successState.ingredients,
                 );
@@ -263,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: HomeRecipeTab(
                                 label: label,
                                 isSelected:
-                                successState.selectedCategory == label,
+                                    successState.selectedCategory == label,
                               ),
                             );
                           }).toList(),
@@ -311,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       else
                         BlocBuilder<SavedViewModel, SavedState>(
                           buildWhen: (_, current) =>
-                          current is BookmarkToggledState ||
+                              current is BookmarkToggledState ||
                               current is SavedSuccessState ||
                               current is SavedErrorState,
                           builder: (context, _) {
@@ -322,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: successState.meals.length +
                                     (successState.hasMoreMeals ||
-                                        successState.isLoadingMoreMeals
+                                            successState.isLoadingMoreMeals
                                         ? 1
                                         : 0),
                                 separatorBuilder: (_, __) =>
@@ -344,39 +341,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final mealId =
                                       meal.idMeal ?? meal.strMeal ?? '';
 
-                                  return GestureDetector(
-                                      onTap: () {
-                                        final searchCubit =
-                                            context.read<SearchCubit>();
-
-                                        searchCubit.addToLastViewed(
-                                          MealModel(
-                                            idMeal: meal.idMeal,
-                                            strMeal: meal.strMeal,
-                                            strMealThumb: meal.strMealThumb,
-                                          ),
-                                        );
-                                      },
-                                      child: HomeMealCard(
-                                        imageUrl: meal.strMealThumb ?? '',
-                                        title: meal.strMeal ?? '',
-                                        timeLabel: _getRandomTimeLabel(mealId),
-                                        isSaved: savedViewModel.isSaved(mealId),
-                                        onFavoritePressed: mealId.isEmpty
-                                            ? null
-                                            : () =>
-                                                savedViewModel.toggleBookmark(
-                                                  userId: _userId,
-                                                  mealId: mealId,
-                                                  mealName: meal.strMeal ?? '',
-                                                  mealThumb:
-                                                      meal.strMealThumb ?? '',
-                                                  rating: '',
-                                                  time: _getRandomTimeLabel(
-                                                      mealId),
-                                                  views: '',
-                                                ),
-                                      ));
+                                  return HomeMealCard(
+                                    imageUrl: meal.strMealThumb ?? '',
+                                    mealId: mealId,
+                                    title: meal.strMeal ?? '',
+                                    timeLabel: _getRandomTimeLabel(mealId),
+                                    isSaved: savedViewModel.isSaved(mealId),
+                                    onTap: () {
+                                      context.read<SearchCubit>().addToLastViewed(
+                                        MealModel(
+                                          idMeal: meal.idMeal,
+                                          strMeal: meal.strMeal,
+                                          strMealThumb: meal.strMealThumb,
+                                        ),
+                                      );
+                                    },
+                                    onFavoritePressed: mealId.isEmpty
+                                        ? null
+                                        : () => savedViewModel.toggleBookmark(
+                                          userId: _userId,
+                                          mealId: mealId,
+                                          mealName: meal.strMeal ?? '',
+                                          mealThumb: meal.strMealThumb ?? '',
+                                          rating: '',
+                                          time: _getRandomTimeLabel(mealId),
+                                          views: '',
+                                        ),
+                                  );
                                 },
                               ),
                             );

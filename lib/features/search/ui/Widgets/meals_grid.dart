@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_app/core/theme/app_styles.dart';
+import 'package:food_app/features/details/ui/screens/details_screen.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../cubit/search_cubit.dart';
@@ -29,10 +30,22 @@ class MealsGrid extends StatelessWidget {
         final meal = meals[index];
 
         return GestureDetector(
-          onTap: () {
+          onTap: () async {
+            final mealId = meal.idMeal;
+            if (mealId == null || mealId.isEmpty) return;
+
             final cubit = context.read<SearchCubit>();
-            cubit.addToLastViewed(meal);
-            cubit.addToSearchHistory(meal);
+            await cubit.addToLastViewed(meal);
+            await cubit.addToSearchHistory(meal);
+
+            if (!context.mounted) return;
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => RecipeDetailPage(mealId: mealId),
+              ),
+            );
           },
           child: Container(
             decoration: BoxDecoration(
@@ -40,7 +53,7 @@ class MealsGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(15.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 5,
                   offset: const Offset(0, 2),
                 ),

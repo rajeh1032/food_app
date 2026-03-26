@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:food_app/firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -18,6 +19,10 @@ import 'features/saved/Data/Models/saved_meal_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -49,7 +54,7 @@ void main() async {
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       child: DevicePreview(
-        enabled: kDebugMode,
+        enabled: false,
         builder: (context) => const MyApp(),
       ),
     ),

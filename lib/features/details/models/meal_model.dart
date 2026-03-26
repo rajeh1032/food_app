@@ -25,6 +25,26 @@ class Meal {
     required this.measures,
   });
 
+  static String _requiredString(
+    Map<String, dynamic> json,
+    String key, {
+    String fallback = '',
+  }) {
+    final value = json[key];
+    if (value == null) return fallback;
+
+    final parsed = value.toString().trim();
+    return parsed.isEmpty ? fallback : parsed;
+  }
+
+  static String? _optionalString(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value == null) return null;
+
+    final parsed = value.toString().trim();
+    return parsed.isEmpty ? null : parsed;
+  }
+
   factory Meal.fromJson(Map<String, dynamic> json) {
     List<String> ingredients = [];
     List<String> measures = [];
@@ -32,22 +52,23 @@ class Meal {
     for (int i = 1; i <= 20; i++) {
       final ingredient = json['strIngredient$i'];
       final measure = json['strMeasure$i'];
-      if (ingredient != null && ingredient.toString().isNotEmpty) {
-        ingredients.add(ingredient);
-        measures.add(measure ?? '');
+      final parsedIngredient = ingredient?.toString().trim();
+      if (parsedIngredient != null && parsedIngredient.isNotEmpty) {
+        ingredients.add(parsedIngredient);
+        measures.add(measure?.toString().trim() ?? '');
       }
     }
 
     return Meal(
-      id: json['idMeal'],
-      name: json['strMeal'],
-      alternateName: json['strMealAlternate'],
-      category: json['strCategory'],
-      area: json['strArea'],
-      instructions: json['strInstructions'],
-      thumb: json['strMealThumb'],
-      tags: json['strTags'],
-      youtube: json['strYoutube'],
+      id: _requiredString(json, 'idMeal'),
+      name: _requiredString(json, 'strMeal', fallback: 'Unknown meal'),
+      alternateName: _optionalString(json, 'strMealAlternate'),
+      category: _requiredString(json, 'strCategory'),
+      area: _requiredString(json, 'strArea'),
+      instructions: _requiredString(json, 'strInstructions'),
+      thumb: _requiredString(json, 'strMealThumb'),
+      tags: _optionalString(json, 'strTags'),
+      youtube: _optionalString(json, 'strYoutube'),
       ingredients: ingredients,
       measures: measures,
     );

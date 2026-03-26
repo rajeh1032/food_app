@@ -10,6 +10,19 @@ class AuthViewModel extends HydratedCubit<AuthStates> {
 
   AuthViewModel({required this.useCase}) : super(AuthInitialState());
 
+  String? _readNullableString(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    return value?.toString();
+  }
+
+  AuthUserEntity? _readUser(Map<String, dynamic> json) {
+    final userJson = json['user'];
+    if (userJson is Map<String, dynamic>) {
+      return AuthUserEntity.fromJson(userJson);
+    }
+    return null;
+  }
+
   /// Register a new user
   void register({
     required String name,
@@ -98,31 +111,45 @@ class AuthViewModel extends HydratedCubit<AuthStates> {
   @override
   AuthStates? fromJson(Map<String, dynamic> json) {
     try {
-      final stateType = json['state'] as String?;
+      final stateType = _readNullableString(json, 'state');
 
       switch (stateType) {
         case 'login_success':
+          final loginUser = _readUser(json);
+          final loginUid = _readNullableString(json, 'uid');
+          if (loginUser == null || loginUid == null || loginUid.isEmpty) {
+            return AuthInitialState();
+          }
           return LoginSuccessState(
-            user: AuthUserEntity.fromJson(json['user']),
-            uid: json['uid'] as String,
+            user: loginUser,
+            uid: loginUid,
           );
         case 'register_success':
+          final registerUser = _readUser(json);
+          final registerUid = _readNullableString(json, 'uid');
+          if (registerUser == null ||
+              registerUid == null ||
+              registerUid.isEmpty) {
+            return AuthInitialState();
+          }
           return RegisterSuccessState(
-            user: AuthUserEntity.fromJson(json['user']),
-            uid: json['uid'] as String,
+            user: registerUser,
+            uid: registerUid,
           );
         case 'authenticated_user_loaded':
           return AuthenticatedUserLoadedState(
-            user: json['user'] != null
-                ? AuthUserEntity.fromJson(json['user'])
-                : null,
+            user: _readUser(json),
           );
         case 'current_user_id_loaded':
-          return CurrentUserIdLoadedState(uid: json['uid'] as String?);
+          return CurrentUserIdLoadedState(uid: _readNullableString(json, 'uid'));
         case 'logout_success':
           return LogoutSuccessState();
         case 'error':
-          return AuthErrorState(message: json['message'] as String);
+          return AuthErrorState(
+            message:
+                _readNullableString(json, 'message') ??
+                'Authentication error',
+          );
         default:
           return AuthInitialState();
       }

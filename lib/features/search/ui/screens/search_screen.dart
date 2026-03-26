@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../details/ui/screens/details_screen.dart';
 import '../../../../core/theme/app_styles.dart';
-import '../../../../core/utils/shared_pref_services.dart';
 import '../cubit/search_cubit.dart';
 import '../cubit/search_states.dart';
+import '../models/meal_model.dart';
 
 import '../widgets/search_field.dart';
 import '../widgets/search_history.dart';
@@ -32,6 +33,24 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   bool showAllHistory = false;
   bool showAllViewed = false;
+
+  Future<void> _openMealDetails(MealModel meal) async {
+    final mealId = meal.idMeal;
+    if (mealId == null || mealId.isEmpty) return;
+
+    final searchCubit = context.read<SearchCubit>();
+    await searchCubit.addToLastViewed(meal);
+    await searchCubit.addToSearchHistory(meal);
+
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RecipeDetailPage(mealId: mealId),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -87,6 +106,7 @@ class _SearchViewState extends State<SearchView> {
                     image: meal.strMealThumb ?? "",
                     rate: meal.rate,
                     isVertical: false,
+                    onTap: () => _openMealDetails(meal),
                   );
                 },
               ),
@@ -122,6 +142,7 @@ class _SearchViewState extends State<SearchView> {
                       title: meal.strMeal ?? "",
                       image: meal.strMealThumb ?? "",
                       rate: meal.rate,
+                      onTap: () => _openMealDetails(meal),
                     );
                   },
                 ),

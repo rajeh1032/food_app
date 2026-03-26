@@ -6,10 +6,14 @@ import 'circle_icon_button.dart';
 
 class HeroImage extends StatelessWidget {
   final String imgUrl;
+  final bool isSaved;
+  final VoidCallback? onBookmarkTap;
 
   const HeroImage({
     super.key,
     required this.imgUrl,
+    this.isSaved = false,
+    this.onBookmarkTap,
   });
 
   @override
@@ -47,9 +51,13 @@ class HeroImage extends StatelessWidget {
           top: 48.h,
           right: 16.w,
           child: CircleIconButton(
-            icon: Icons.bookmark_rounded,
-            iconColor: AppColors.primaryColor,
-            onTap: () {},
+            icon:
+                isSaved
+                    ? Icons.bookmark_rounded
+                    : Icons.bookmark_border_rounded,
+            iconColor:
+                isSaved ? AppColors.primaryDark : AppColors.primaryColor,
+            onTap: onBookmarkTap ?? () {},
           ),
         ),
       ],
