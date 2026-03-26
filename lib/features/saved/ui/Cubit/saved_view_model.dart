@@ -50,10 +50,13 @@ class SavedViewModel extends Cubit<SavedState> {
     required String mealId,
     required String mealName,
     required String mealThumb,
+    required String rating,
+    required String time,
+    required String views,
   }) async {
     final alreadySaved =
         _savedIds.contains(mealId) ||
-        await _isMealSaved(mealId: mealId, userId: userId);
+            await _isMealSaved(mealId: mealId, userId: userId);
 
     if (alreadySaved) {
       _savedIds.add(mealId);
@@ -62,12 +65,10 @@ class SavedViewModel extends Cubit<SavedState> {
     if (alreadySaved) {
       final result = await _removeMeal(mealId: mealId, userId: userId);
       await result.fold(
-        (failure) async => emit(SavedErrorState(failure.errorMessage)),
-        (_) async {
+            (failure) async => emit(SavedErrorState(failure.errorMessage)),
+            (_) async {
           _savedIds.remove(mealId);
           emit(BookmarkToggledState(mealId: mealId, isSaved: false));
-
-          // Refresh the saved list if it was already loaded
           await _refreshListAfterToggle(userId);
         },
       );
@@ -78,11 +79,14 @@ class SavedViewModel extends Cubit<SavedState> {
           mealName: mealName,
           mealThumb: mealThumb,
           userId: userId,
+          rating: rating,
+          time: time,
+          views: views,
         ),
       );
       await result.fold(
-        (failure) async => emit(SavedErrorState(failure.errorMessage)),
-        (_) async {
+            (failure) async => emit(SavedErrorState(failure.errorMessage)),
+            (_) async {
           _savedIds.add(mealId);
           emit(BookmarkToggledState(mealId: mealId, isSaved: true));
           await _refreshListAfterToggle(userId);

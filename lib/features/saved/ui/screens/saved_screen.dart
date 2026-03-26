@@ -118,8 +118,8 @@ class _SavedScreenState extends State<SavedScreen> {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 12.w,
-              mainAxisSpacing: 12.h,
-              childAspectRatio: 0.78,
+              mainAxisSpacing: 15.h,
+              mainAxisExtent: 215.h,
             ),
             itemCount: meals.length,
             itemBuilder: (context, index) {
@@ -131,6 +131,9 @@ class _SavedScreenState extends State<SavedScreen> {
                   mealId: meal.mealId,
                   mealName: meal.mealName,
                   mealThumb: meal.mealThumb,
+                  rating: meal.rating,
+                  time: meal.time,
+                  views: meal.views,
                 ),
               );
             },

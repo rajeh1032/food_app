@@ -119,6 +119,9 @@ class FeaturedRecipeCard extends StatelessWidget {
                             mealId: mealId,
                             mealName: title,
                             mealThumb: imageUrl,
+                            rating: rating,
+                            time: time,
+                            views: '',
                           ),
                           behavior: HitTestBehavior.opaque,
                           child: Icon(

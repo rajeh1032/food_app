@@ -107,6 +107,9 @@ class PopularRecipeCard extends StatelessWidget {
                             mealId: mealId,
                             mealName: title,
                             mealThumb: imageUrl,
+                            rating: rating,
+                            time: time,
+                            views: views,
                           ),
                           behavior: HitTestBehavior.opaque,
                           child: Icon(

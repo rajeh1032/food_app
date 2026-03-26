@@ -347,12 +347,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onFavoritePressed: mealId.isEmpty
                                         ? null
                                         : () => savedViewModel.toggleBookmark(
-                                              userId: _userId,
-                                              mealId: mealId,
-                                              mealName: meal.strMeal ?? '',
-                                              mealThumb:
-                                                  meal.strMealThumb ?? '',
-                                            ),
+                                      userId: _userId,
+                                      mealId: mealId,
+                                      mealName: meal.strMeal ?? '',
+                                      mealThumb: meal.strMealThumb ?? '',
+                                      rating: '',
+                                      time: _getRandomTimeLabel(mealId),
+                                      views: '',
+                                    ),
                                   );
                                 },
                               ),
