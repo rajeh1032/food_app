@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_styles.dart';
+import '../../../details/ui/screens/details_screen.dart';
 import 'home_network_image.dart';
 
 class HomeMealCard extends StatelessWidget {
   final String imageUrl;
+  final String mealId;
   final String title;
   final String timeLabel;
   final bool isSaved;
@@ -20,16 +22,17 @@ class HomeMealCard extends StatelessWidget {
     required this.timeLabel,
     this.isSaved = false,
     this.onFavoritePressed,
+    required this.mealId,
   });
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final cardWidth =
-        math.max(205.w, math.min(280.w, screenWidth * 0.7)).toDouble();
+    math.max(205.w, math.min(280.w, screenWidth * 0.7)).toDouble();
     final contentPadding = cardWidth < 240.w ? 11.w : 12.w;
     final actionButtonSize =
-        math.max(28.w, math.min(30.w, cardWidth * 0.105)).toDouble();
+    math.max(28.w, math.min(30.w, cardWidth * 0.105)).toDouble();
     final titleStyle = AppStyles.headlineSmall.copyWith(
       fontSize: cardWidth < 240.w ? 15.sp : 16.sp,
       height: 1.25,
@@ -45,12 +48,21 @@ class HomeMealCard extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final cardHeight =
-              constraints.maxHeight.isFinite ? constraints.maxHeight : 260.h;
+          constraints.maxHeight.isFinite ? constraints.maxHeight : 260.h;
           final imageHeight =
-              math.min(cardHeight * 0.52, cardWidth * 0.55).toDouble();
+          math.min(cardHeight * 0.52, cardWidth * 0.55).toDouble();
           final footerGap = 7.h;
 
-          return Container(
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RecipeDetailPage(mealId: mealId),
+                ),
+              );
+            },
+              child:Container(
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: AppColors.white,
@@ -72,7 +84,7 @@ class HomeMealCard extends StatelessWidget {
                   width: double.infinity,
                   height: imageHeight,
                   borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(16.r)),
+                  BorderRadius.vertical(top: Radius.circular(16.r)),
                   fallbackIcon: Icons.fastfood_rounded,
                   fallbackIconSize: 40,
                 ),
@@ -138,7 +150,7 @@ class HomeMealCard extends StatelessWidget {
                                       onPressed: onFavoritePressed,
                                       icon: AnimatedSwitcher(
                                         duration:
-                                            const Duration(milliseconds: 180),
+                                        const Duration(milliseconds: 180),
                                         child: Icon(
                                           isSaved
                                               ? Icons.favorite_rounded
@@ -161,7 +173,7 @@ class HomeMealCard extends StatelessWidget {
                 ),
               ],
             ),
-          );
+          ));
         },
       ),
     );

@@ -103,16 +103,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<HomeIngredientEntity> _bottomIngredients(
-    List<HomeIngredientEntity> items,
-  ) {
+      List<HomeIngredientEntity> items,
+      ) {
     final splitIndex = (items.length / 2).ceil();
     return items.skip(splitIndex).toList();
   }
 
   Widget _buildIngredientRow(
-    List<HomeIngredientEntity> ingredients,
-    HomeSuccessState successState,
-  ) {
+      List<HomeIngredientEntity> ingredients,
+      HomeSuccessState successState,
+      ) {
     return Row(
       children: List.generate(ingredients.length, (index) {
         final ingredient = ingredients[index];
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: AppColors.scaffoldBgColor,
         body: BlocListener<SavedViewModel, SavedState>(
           listenWhen: (_, current) =>
-              current is BookmarkToggledState || current is SavedErrorState,
+          current is BookmarkToggledState || current is SavedErrorState,
           listener: (context, state) {
             if (state is BookmarkToggledState) {
               ScaffoldMessenger.of(context)
@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 final successState = state as HomeSuccessState;
                 final topIngredients =
-                    _topIngredients(successState.ingredients);
+                _topIngredients(successState.ingredients);
                 final bottomIngredients = _bottomIngredients(
                   successState.ingredients,
                 );
@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: HomeRecipeTab(
                                 label: label,
                                 isSelected:
-                                    successState.selectedCategory == label,
+                                successState.selectedCategory == label,
                               ),
                             );
                           }).toList(),
@@ -311,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       else
                         BlocBuilder<SavedViewModel, SavedState>(
                           buildWhen: (_, current) =>
-                              current is BookmarkToggledState ||
+                          current is BookmarkToggledState ||
                               current is SavedSuccessState ||
                               current is SavedErrorState,
                           builder: (context, _) {
@@ -322,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: successState.meals.length +
                                     (successState.hasMoreMeals ||
-                                            successState.isLoadingMoreMeals
+                                        successState.isLoadingMoreMeals
                                         ? 1
                                         : 0),
                                 separatorBuilder: (_, __) =>
