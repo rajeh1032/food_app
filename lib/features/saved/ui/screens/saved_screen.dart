@@ -40,7 +40,7 @@ class _SavedScreenState extends State<SavedScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _viewModel,
+      value:getIt<SavedViewModel>(),
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBgColor,
         body: SafeArea(
