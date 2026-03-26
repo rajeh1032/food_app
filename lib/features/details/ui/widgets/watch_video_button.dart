@@ -8,10 +8,11 @@ import '../screens/video_screen.dart';
 class WatchVideoButton extends StatelessWidget {
 
   final String youtubeUrl;
-
-  const WatchVideoButton({
+  final List<String> ingredients;
+  final List<String> measures;
+  const WatchVideoButton( {
     super.key,
-    required this.youtubeUrl,
+    required this.ingredients, required this.measures, required this.youtubeUrl,
   });
 
   @override
@@ -24,7 +25,7 @@ class WatchVideoButton extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (_) => VideoScreen(
-              youtubeUrl: youtubeUrl,
+              youtubeUrl: youtubeUrl, ingredients:ingredients , measures:measures,
             ),
           ),
         );

@@ -6,7 +6,7 @@ import '../../Domain/use_case/is_meal_saved_use_case.dart';
 import '../../Domain/use_case/remove_meal_use_case.dart';
 import '../../Domain/use_case/save_meal_use_case.dart';
 import 'saved_states.dart';
-@injectable
+@lazySingleton
 class SavedViewModel extends Cubit<SavedState> {
   final GetSavedMealsUseCase _getSavedMeals;
   final SaveMealUseCase _saveMeal;
@@ -51,17 +51,28 @@ class SavedViewModel extends Cubit<SavedState> {
     required String mealName,
     required String mealThumb,
   }) async {
-    final alreadySaved = _savedIds.contains(mealId);
+    final alreadySaved =
+        _savedIds.contains(mealId) ||
+        await _isMealSaved(mealId: mealId, userId: userId);
 
     if (alreadySaved) {
-      await _removeMeal(mealId: mealId, userId: userId);
-      _savedIds.remove(mealId);
-      emit(BookmarkToggledState(mealId: mealId, isSaved: false));
+      _savedIds.add(mealId);
+    }
 
-      // Refresh the saved list if it was already loaded
-      _refreshListAfterToggle(userId);
+    if (alreadySaved) {
+      final result = await _removeMeal(mealId: mealId, userId: userId);
+      await result.fold(
+        (failure) async => emit(SavedErrorState(failure.errorMessage)),
+        (_) async {
+          _savedIds.remove(mealId);
+          emit(BookmarkToggledState(mealId: mealId, isSaved: false));
+
+          // Refresh the saved list if it was already loaded
+          await _refreshListAfterToggle(userId);
+        },
+      );
     } else {
-      await _saveMeal(
+      final result = await _saveMeal(
         SavedMealEntity(
           mealId: mealId,
           mealName: mealName,
@@ -69,10 +80,14 @@ class SavedViewModel extends Cubit<SavedState> {
           userId: userId,
         ),
       );
-      _savedIds.add(mealId);
-      emit(BookmarkToggledState(mealId: mealId, isSaved: true));
-
-      _refreshListAfterToggle(userId);
+      await result.fold(
+        (failure) async => emit(SavedErrorState(failure.errorMessage)),
+        (_) async {
+          _savedIds.add(mealId);
+          emit(BookmarkToggledState(mealId: mealId, isSaved: true));
+          await _refreshListAfterToggle(userId);
+        },
+      );
     }
   }
 

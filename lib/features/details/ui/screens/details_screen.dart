@@ -152,7 +152,7 @@ class _RecipeDetailView extends StatelessWidget {
                   child: Center(
                     child: WatchVideoButton(
                       youtubeUrl:
-                      meal.youtube ?? '',
+                      meal.youtube ?? '', measures:meal.measures, ingredients: meal.ingredients,
                     ),
                   ),
                 ),

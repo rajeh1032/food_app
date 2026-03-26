@@ -24,16 +24,19 @@ class RootScreenState extends State<RootScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     SearchScreen(),
-    const SavedScreen(), // ← no userId needed, gets from FirebaseAuth internally
+    const SavedScreen(),  
     const ProfileScreen(),
   ];
 
   @override
   void initState() {
     super.initState();
-    // Open Hive box for current user as soon as RootScreen loads
+    _initializeSavedBox();
+  }
+
+  Future<void> _initializeSavedBox() async {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
-    SavedLocalDataSourceImpl.openBoxForUser(userId);
+    await SavedLocalDataSourceImpl.openBoxForUser(userId);
   }
 
   void _onItemTapped(int index) {
@@ -52,7 +55,7 @@ class RootScreenState extends State<RootScreen> {
           color: AppColors.white,
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.05),
+              color: AppColors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
