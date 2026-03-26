@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_styles.dart';
+import '../../../saved/ui/Cubit/saved_states.dart';
+import '../../../saved/ui/Cubit/saved_view_model.dart';
 import 'home_network_image.dart';
 import 'recipe_meta_item.dart';
 
 class PopularRecipeCard extends StatelessWidget {
+  final String mealId;
   final String imageUrl;
   final String title;
   final String rating;
@@ -14,6 +19,7 @@ class PopularRecipeCard extends StatelessWidget {
 
   const PopularRecipeCard({
     super.key,
+    required this.mealId,
     required this.imageUrl,
     required this.title,
     required this.rating,
@@ -23,6 +29,8 @@ class PopularRecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+
     return Container(
       width: 159.w,
       decoration: BoxDecoration(
@@ -86,10 +94,32 @@ class PopularRecipeCard extends StatelessWidget {
                       iconColor: AppColors.textHint,
                     ),
                     const Spacer(),
-                    Icon(
-                      Icons.bookmark_border_rounded,
-                      color: AppColors.textHint,
-                      size: 18.sp,
+                    BlocBuilder<SavedViewModel, SavedState>(
+                      buildWhen: (_, current) =>
+                      current is BookmarkToggledState ||
+                          current is SavedSuccessState,
+                      builder: (context, __) {
+                        final isSaved =
+                        context.read<SavedViewModel>().isSaved(mealId);
+                        return GestureDetector(
+                          onTap: () => context.read<SavedViewModel>().toggleBookmark(
+                            userId: userId,
+                            mealId: mealId,
+                            mealName: title,
+                            mealThumb: imageUrl,
+                          ),
+                          behavior: HitTestBehavior.opaque,
+                          child: Icon(
+                            isSaved
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
+                            color: isSaved
+                                ? AppColors.primaryDark
+                                : AppColors.textHint,
+                            size: 18.sp,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
