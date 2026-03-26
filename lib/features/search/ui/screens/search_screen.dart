@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_styles.dart';
+import '../../../../core/utils/shared_pref_services.dart';
 import '../cubit/search_cubit.dart';
 import '../cubit/search_states.dart';
 
@@ -16,10 +17,8 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SearchCubit(),
-      child: const SearchView(),
-    );
+    return const SearchView();
+
   }
 }
 
@@ -35,6 +34,14 @@ class _SearchViewState extends State<SearchView> {
   bool showAllViewed = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SearchCubit>().loadFromPrefs();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cubit = context.watch<SearchCubit>();
 
@@ -42,7 +49,7 @@ class _SearchViewState extends State<SearchView> {
       backgroundColor: const Color(0xffF5F5F5),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -66,23 +73,23 @@ class _SearchViewState extends State<SearchView> {
               cubit.searchHistory.isEmpty
                   ? const Text("No search history")
                   : ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: showAllHistory
-                          ? cubit.searchHistory.length
-                          : cubit.searchHistory.take(3).length,
-                      itemBuilder: (context, index) {
-                        final meal = cubit.searchHistory[index];
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: showAllHistory
+                    ? cubit.searchHistory.length
+                    : cubit.searchHistory.take(3).length,
+                itemBuilder: (context, index) {
+                  final meal = cubit.searchHistory[index];
 
-                        return SearchHistory(
-                          title: meal.strMeal ?? "",
-                          image: meal.strMealThumb ?? "",
-                          rate: meal.rate,
-                          isVertical: false,
-                        );
-                      },
-                    ),
+                  return SearchHistory(
+                    title: meal.strMeal ?? "",
+                    image: meal.strMealThumb ?? "",
+                    rate: meal.rate,
+                    isVertical: false,
+                  );
+                },
+              ),
 
               SizedBox(height: 10.h),
 
@@ -102,23 +109,23 @@ class _SearchViewState extends State<SearchView> {
               cubit.lastViewed.isEmpty
                   ? const Text("No viewed meals yet")
                   : SizedBox(
-                      height: 160.h,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: showAllViewed
-                            ? cubit.lastViewed.length
-                            : cubit.lastViewed.take(3).length,
-                        itemBuilder: (context, index) {
-                          final meal = cubit.lastViewed[index];
+                height: 160.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: showAllViewed
+                      ? cubit.lastViewed.length
+                      : cubit.lastViewed.take(3).length,
+                  itemBuilder: (context, index) {
+                    final meal = cubit.lastViewed[index];
 
-                          return LastViewed(
-                            title: meal.strMeal ?? "",
-                            image: meal.strMealThumb ?? "",
-                            rate: meal.rate,
-                          );
-                        },
-                      ),
-                    ),
+                    return LastViewed(
+                      title: meal.strMeal ?? "",
+                      image: meal.strMealThumb ?? "",
+                      rate: meal.rate,
+                    );
+                  },
+                ),
+              ),
 
               SizedBox(height: 15.h),
 
@@ -126,7 +133,7 @@ class _SearchViewState extends State<SearchView> {
                 "Based on your search",
                 style: AppStyles.headlineMedium,
               ),
-              SizedBox(height: 15.h,),
+              SizedBox(height: 15.h),
 
               BlocBuilder<SearchCubit, SearchStates>(
                 builder: (context, state) {
@@ -148,7 +155,7 @@ class _SearchViewState extends State<SearchView> {
                       return const Center(child: Text("No meals found"));
                     }
 
-                    return MealsGrid(meals: state.meals,);
+                    return MealsGrid(meals: state.meals);
                   }
 
                   return const SizedBox();

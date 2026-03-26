@@ -8,6 +8,8 @@ import '../../../../core/theme/app_styles.dart';
 import '../../../saved/Data/Data Sources/saved_local_data_source.dart';
 import '../../../saved/ui/Cubit/saved_states.dart';
 import '../../../saved/ui/Cubit/saved_view_model.dart';
+import '../../../search/ui/cubit/search_cubit.dart';
+import '../../../search/ui/models/meal_model.dart';
 import '../../Domain/Entity/home_ingredient_entity.dart';
 import '../cubit/home_states.dart';
 import '../cubit/home_view_model.dart';
@@ -149,6 +151,9 @@ class _HomeScreenState extends State<HomeScreen> {
       providers: [
         BlocProvider.value(value: viewModel),
         BlocProvider.value(value: savedViewModel),
+        BlocProvider(
+          create: (context) => SearchCubit(uid: _userId),
+        ),
       ],
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBgColor,
@@ -339,21 +344,39 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final mealId =
                                       meal.idMeal ?? meal.strMeal ?? '';
 
-                                  return HomeMealCard(
-                                    imageUrl: meal.strMealThumb ?? '',
-                                    title: meal.strMeal ?? '',
-                                    timeLabel: _getRandomTimeLabel(mealId),
-                                    isSaved: savedViewModel.isSaved(mealId),
-                                    onFavoritePressed: mealId.isEmpty
-                                        ? null
-                                        : () => savedViewModel.toggleBookmark(
-                                      userId: _userId,
-                                      mealId: mealId,
-                                      mealName: meal.strMeal ?? '',
-                                      mealThumb:
-                                      meal.strMealThumb ?? '',
-                                    ), mealId:mealId ,
-                                  );
+                                  return GestureDetector(
+                                      onTap: () {
+                                        final searchCubit =
+                                            context.read<SearchCubit>();
+
+                                        searchCubit.addToLastViewed(
+                                          MealModel(
+                                            idMeal: meal.idMeal,
+                                            strMeal: meal.strMeal,
+                                            strMealThumb: meal.strMealThumb,
+                                          ),
+                                        );
+                                      },
+                                      child: HomeMealCard(
+                                        imageUrl: meal.strMealThumb ?? '',
+                                        title: meal.strMeal ?? '',
+                                        timeLabel: _getRandomTimeLabel(mealId),
+                                        isSaved: savedViewModel.isSaved(mealId),
+                                        onFavoritePressed: mealId.isEmpty
+                                            ? null
+                                            : () =>
+                                                savedViewModel.toggleBookmark(
+                                                  userId: _userId,
+                                                  mealId: mealId,
+                                                  mealName: meal.strMeal ?? '',
+                                                  mealThumb:
+                                                      meal.strMealThumb ?? '',
+                                                  rating: '',
+                                                  time: _getRandomTimeLabel(
+                                                      mealId),
+                                                  views: '',
+                                                ),
+                                      ));
                                 },
                               ),
                             );

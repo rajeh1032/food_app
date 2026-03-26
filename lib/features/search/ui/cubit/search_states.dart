@@ -9,7 +9,15 @@ class SearchLoadingState extends SearchStates {}
 class SearchSuccessState extends SearchStates {
   final List<MealModel> meals;
 
-  SearchSuccessState(this.meals);
+  final List<MealModel> searchHistory;
+  final List<MealModel> lastViewed;
+
+  SearchSuccessState({
+  required this.meals,
+  required this.searchHistory,
+  required this.lastViewed,
+  });
+
 }
 
 class SearchErrorState extends SearchStates {
