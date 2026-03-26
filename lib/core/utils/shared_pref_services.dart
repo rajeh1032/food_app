@@ -68,4 +68,16 @@ class SharedPrefService {
   Future<void> clearAll() async {
     await _prefs.clear();
   }
+  // Add this inside SharedPrefService class
+
+  static const String usernameKey = 'username';
+
+  String? getUsername() => _prefs.getString(usernameKey);
+
+  Future<void> setUsername(String username) async {
+    await _prefs.setString(usernameKey, username);
+  }
+  Future<void> clearUsername() async {
+    await _prefs.remove(usernameKey);
+  }
 }

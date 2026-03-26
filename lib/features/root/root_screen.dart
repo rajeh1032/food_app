@@ -12,6 +12,7 @@ import '../profile/ui/screens/profile_screen.dart';
 import '../saved/Data/Data Sources/saved_local_data_source.dart';
 import '../saved/ui/Cubit/saved_view_model.dart';
 import '../saved/ui/screens/saved_screen.dart';
+import '../search/ui/cubit/search_cubit.dart';
 import '../search/ui/screens/search_screen.dart';
 
 class RootScreen extends StatefulWidget {
@@ -48,8 +49,16 @@ class RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<SavedViewModel>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: getIt<SavedViewModel>()),
+
+        BlocProvider(
+          create: (_) => SearchCubit(
+            uid: FirebaseAuth.instance.currentUser?.uid ?? 'guest',
+          ),
+        ),
+      ],
       child: Scaffold(
         body: IndexedStack(
           index: _selectedIndex,
