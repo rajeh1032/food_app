@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/assets/app_assets.dart';
+import '../../core/di/di.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_styles.dart';
 import '../../core/utils/svg_icon.dart';
 import '../home/ui/screens/home_screen.dart';
 import '../profile/ui/screens/profile_screen.dart';
 import '../saved/Data/Data Sources/saved_local_data_source.dart';
+import '../saved/ui/Cubit/saved_view_model.dart';
 import '../saved/ui/screens/saved_screen.dart';
 import '../search/ui/screens/search_screen.dart';
 
@@ -24,7 +27,7 @@ class RootScreenState extends State<RootScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     SearchScreen(),
-    const SavedScreen(),  
+    const SavedScreen(),
     const ProfileScreen(),
   ];
 
@@ -45,33 +48,36 @@ class RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
+    return BlocProvider.value(
+      value: getIt<SavedViewModel>(),
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(icon: AppAssets.homeIcon,    label: 'Home',    index: 0),
-                _buildNavItem(icon: AppAssets.searchIcon,  label: 'Search',  index: 1),
-                _buildNavItem(icon: AppAssets.bookmarkIcon,   label: 'Saved',   index: 2),
-                _buildNavItem(icon: AppAssets.profileIcon, label: 'Profile', index: 3),
-              ],
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(icon: AppAssets.homeIcon,     label: 'Home',    index: 0),
+                  _buildNavItem(icon: AppAssets.searchIcon,   label: 'Search',  index: 1),
+                  _buildNavItem(icon: AppAssets.bookmarkIcon, label: 'Saved',   index: 2),
+                  _buildNavItem(icon: AppAssets.profileIcon,  label: 'Profile', index: 3),
+                ],
+              ),
             ),
           ),
         ),

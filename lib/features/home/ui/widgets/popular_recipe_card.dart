@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_styles.dart';
+import '../../../saved/ui/Cubit/saved_states.dart';
+import '../../../saved/ui/Cubit/saved_view_model.dart';
 import 'home_network_image.dart';
 import 'recipe_meta_item.dart';
 
 class PopularRecipeCard extends StatelessWidget {
+  final String mealId;
   final String imageUrl;
   final String title;
   final String rating;
@@ -14,6 +19,7 @@ class PopularRecipeCard extends StatelessWidget {
 
   const PopularRecipeCard({
     super.key,
+    required this.mealId,
     required this.imageUrl,
     required this.title,
     required this.rating,
@@ -23,6 +29,8 @@ class PopularRecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+
     return Container(
       width: 159.w,
       decoration: BoxDecoration(
@@ -86,10 +94,32 @@ class PopularRecipeCard extends StatelessWidget {
                       iconColor: AppColors.textHint,
                     ),
                     const Spacer(),
-                    Icon(
-                      Icons.bookmark_border_rounded,
-                      color: AppColors.textHint,
-                      size: 18.sp,
+                    BlocBuilder<SavedViewModel, SavedState>(
+                      buildWhen: (_, current) =>
+                      current is BookmarkToggledState ||
+                          current is SavedSuccessState,
+                      builder: (context, __) {
+                        final isSaved =
+                        context.read<SavedViewModel>().isSaved(mealId);
+                        return GestureDetector(
+                          onTap: () => context.read<SavedViewModel>().toggleBookmark(
+                            userId: userId,
+                            mealId: mealId,
+                            mealName: title,
+                            mealThumb: imageUrl,
+                          ),
+                          behavior: HitTestBehavior.opaque,
+                          child: Icon(
+                            isSaved
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
+                            color: isSaved
+                                ? AppColors.primaryDark
+                                : AppColors.textHint,
+                            size: 18.sp,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -101,153 +131,3 @@ class PopularRecipeCard extends StatelessWidget {
     );
   }
 }
-//
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import '../../../../core/theme/app_colors.dart';
-// import '../../../../core/theme/app_styles.dart';
-// import '../../../../core/di/di.dart';
-// import '../../../saved/ui/Cubit/saved_states.dart';
-// import '../../../saved/ui/Cubit/saved_view_model.dart';
-// import 'home_network_image.dart';
-// import 'recipe_meta_item.dart';
-//
-// class PopularRecipeCard extends StatefulWidget {
-//   final String mealId;
-//   final String imageUrl;
-//   final String title;
-//   final String rating;
-//   final String time;
-//   final String views;
-//
-//   const PopularRecipeCard({
-//     super.key,
-//     required this.mealId,
-//     required this.imageUrl,
-//     required this.title,
-//     required this.rating,
-//     required this.time,
-//     required this.views,
-//   });
-//
-//   @override
-//   State<PopularRecipeCard> createState() => _PopularRecipeCardState();
-// }
-//
-// class _PopularRecipeCardState extends State<PopularRecipeCard> {
-//   late final SavedViewModel _savedViewModel;
-//   late final String _userId;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _savedViewModel = getIt<SavedViewModel>();
-//     _userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
-//     _savedViewModel.preloadSavedIds(_userId);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       width: 159.w,
-//       decoration: BoxDecoration(
-//         color: AppColors.white,
-//         borderRadius: BorderRadius.circular(8.r),
-//         boxShadow: [
-//           BoxShadow(
-//             color: AppColors.black.withValues(alpha: 0.04),
-//             blurRadius: 16,
-//             offset: const Offset(0, 4),
-//           ),
-//         ],
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           HomeNetworkImage(
-//             imageUrl: widget.imageUrl,
-//             width: 159.w,
-//             height: 145.h,
-//             borderRadius: BorderRadius.vertical(top: Radius.circular(8.r)),
-//             fallbackIcon: Icons.ramen_dining_rounded,
-//             fallbackIconSize: 36,
-//           ),
-//           Padding(
-//             padding: EdgeInsets.all(8.w),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Text(
-//                   widget.title,
-//                   maxLines: 2,
-//                   overflow: TextOverflow.ellipsis,
-//                   style: AppStyles.titleMedium.copyWith(
-//                     fontWeight: FontWeight.w500,
-//                     height: 20 / 14,
-//                   ),
-//                 ),
-//                 SizedBox(height: 8.h),
-//                 Row(
-//                   children: [
-//                     RecipeMetaItem(
-//                       icon: Icons.star_rounded,
-//                       label: '(${widget.rating})',
-//                       iconColor: AppColors.ratingColor,
-//                     ),
-//                     SizedBox(width: 10.w),
-//                     RecipeMetaItem(
-//                       icon: Icons.access_time_rounded,
-//                       label: widget.time,
-//                       iconColor: AppColors.timerColor,
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 15.h),
-//                 Row(
-//                   children: [
-//                     RecipeMetaItem(
-//                       icon: Icons.remove_red_eye_outlined,
-//                       label: widget.views,
-//                       iconColor: AppColors.textHint,
-//                     ),
-//                     const Spacer(),
-//                     BlocBuilder<SavedViewModel, SavedState>(
-//                       bloc: _savedViewModel,
-//                       buildWhen: (_, current) =>
-//                       current is BookmarkToggledState ||
-//                           current is SavedSuccessState,
-//                       builder: (_, __) {
-//                         final bool isSaved =
-//                         _savedViewModel.isSaved(widget.mealId);
-//                         return GestureDetector(
-//                           onTap: () => _savedViewModel.toggleBookmark(
-//                             userId: _userId,
-//                             mealId: widget.mealId,
-//                             mealName: widget.title,
-//                             mealThumb: widget.imageUrl,
-//                           ),
-//                           behavior: HitTestBehavior.opaque,
-//                           child: Icon(
-//                             isSaved
-//                                 ? Icons.bookmark_rounded
-//                                 : Icons.bookmark_border_rounded,
-//                             color: isSaved
-//                                 ? AppColors.primaryDark
-//                                 : AppColors.textHint,
-//                             size: 18.sp,
-//                           ),
-//                         );
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
