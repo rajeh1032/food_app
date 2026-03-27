@@ -16,7 +16,6 @@ class SavedErrorState extends SavedState {
   SavedErrorState(this.message);
 }
 
-/// Emitted after toggling bookmark so Home/Details can react
 class BookmarkToggledState extends SavedState {
   final String mealId;
   final bool isSaved;

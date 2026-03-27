@@ -13,13 +13,11 @@ abstract class SavedLocalDataSource {
 class SavedLocalDataSourceImpl implements SavedLocalDataSource {
   static final Map<String, Future<Box<SavedMealModel>>> _openingBoxes = {};
 
-  // Each user gets their own box: "saved_<userId>"
   Future<Box<SavedMealModel>> _getBox(String userId) async {
     await openBoxForUser(userId);
     return Hive.box<SavedMealModel>('saved_$userId');
   }
 
-  // Call this before using the box for a specific user
   static Future<Box<SavedMealModel>> openBoxForUser(String userId) async {
     final boxName = 'saved_$userId';
 
@@ -45,7 +43,6 @@ class SavedLocalDataSourceImpl implements SavedLocalDataSource {
   @override
   Future<void> saveMeal(SavedMealModel meal) async {
     final box = await _getBox(meal.userId);
-    // Key = mealId so we avoid duplicates
     await box.put(meal.mealId, meal);
   }
 

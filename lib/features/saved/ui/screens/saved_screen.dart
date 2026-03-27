@@ -58,7 +58,6 @@ class _SavedScreenState extends State<SavedScreen> {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                // Search bar
                 Container(
                   decoration: BoxDecoration(
                     color: AppColors.white,

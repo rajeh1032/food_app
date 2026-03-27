@@ -12,8 +12,6 @@ class SavedViewModel extends Cubit<SavedState> {
   final SaveMealUseCase _saveMeal;
   final RemoveMealUseCase _removeMeal;
   final IsMealSavedUseCase _isMealSaved;
-
-  // In-memory cache of saved meal IDs for fast lookup
   final Set<String> _savedIds = {};
 
   SavedViewModel({
@@ -27,7 +25,6 @@ class SavedViewModel extends Cubit<SavedState> {
         _isMealSaved = isMealSaved,
         super(SavedInitialState());
 
-  // ─── Load saved meals for current user ───────────────────────────────────
 
   Future<void> loadSavedMeals(String userId) async {
     emit(SavedLoadingState());
@@ -43,7 +40,6 @@ class SavedViewModel extends Cubit<SavedState> {
     );
   }
 
-  // ─── Toggle bookmark from Home or Details ────────────────────────────────
 
   Future<void> toggleBookmark({
     required String userId,
@@ -108,11 +104,9 @@ class SavedViewModel extends Cubit<SavedState> {
     );
   }
 
-  // ─── Check if a single meal is saved (sync from cache) ───────────────────
 
   bool isSaved(String mealId) => _savedIds.contains(mealId);
 
-  // ─── Preload saved IDs without changing screen state ─────────────────────
 
   Future<void> preloadSavedIds(String userId) async {
     final result = await _getSavedMeals(userId);
